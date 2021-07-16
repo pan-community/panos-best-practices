@@ -1,0 +1,48 @@
+name: bp_playlist
+
+label: Best Practices Playlist
+description: Skillets based on Palo Alto Networks Best Practice Docs
+
+type: panos
+
+labels:
+  collection:
+    - lib
+
+variables:
+  - name: TARGET_IP
+    description: Next-Gen Firewall IP or Hostname
+    default: 192.168.55.10
+    type_hint: fqdn_or_ip
+
+  - name: TARGET_USERNAME
+    description: Next-Gen Firewall Username
+    default: admin
+    type_hint: text
+
+  - name: TARGET_PASSWORD
+    description: Next-Gen Firewall Password
+    default: admin
+    type_hint: password
+
+  - name: snippet_execution_options
+    description: Check the boxes for which skillets to execute
+    default: ['']
+    type_hint: checkbox
+    cbx_list:
+      - key: Internet Gateway Best Practices
+        value: load_ig_bp
+      - key: Layer 4 - Layer 7 Best Practices
+        value: layer4_layer7
+
+snippets:
+
+  - name: internet_gateway_best_practice
+    include: internet_gateway_best_practice
+    when: "'load_ig_bp' in snippet_execution_options"
+
+  - name: Layer_4_to_7
+    include: Layer_4_to_7
+    when: "'layer4_layer7' in snippet_execution_options"
+
+

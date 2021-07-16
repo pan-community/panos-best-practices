@@ -1,0 +1,26 @@
+name: Layer_4_to_7
+label: Layer 4 to 7 add on skillet
+description: The layer 4 to 7 add on skillet for HomeSkillet.
+
+type: panos
+
+variables:
+
+snippets:
+
+  - name: enable_mismatched_overlapping_TCP_segment
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/network/profiles/zone-protection-profile/entry[@name="Recommended_Zone_Protection"]
+    element: |-
+      <discard-overlapping-tcp-segment-mismatch>yes</discard-overlapping-tcp-segment-mismatch>
+
+  - name: enable_multicast
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/network/virtual-router/entry[@name="default"]
+    element: |-
+      <multicast>
+        <enable>yes</enable>
+      </multicast>
+
+  - name: allow_http_range
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/network/virtual-router/entry[@name="default"]
+    element: |-
+      <allow-http-range>no</allow-http-range>

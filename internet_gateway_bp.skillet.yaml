@@ -1,0 +1,836 @@
+name: internet_gateway_best_practice
+
+label: Internet Gateway Best Practices
+
+description: Skillet based on Internet Gateway Best Practices docs
+
+type: panos
+
+labels:
+
+    collection: Best Practices
+
+variables: []
+
+snippets:
+
+-   name: monitor-interzone-traffic
+    xpath: /config/shared/reports
+    element: |-
+        <entry name="Monitor Interzone Traffic">
+          <type>
+            <trsum>
+              <sortby>sessions</sortby>
+              <group-by>rule</group-by>
+              <aggregate-by>
+                <member>app</member>
+              </aggregate-by>
+              <values>
+                <member>bytes</member>
+                <member>sessions</member>
+              </values>
+            </trsum>
+          </type>
+          <period>last-hour</period>
+          <topn>10</topn>
+          <topm>10</topm>
+          <caption>Monitor Interzone Traffic</caption>
+          <query>(rule eq 'interzone-default')</query>
+        </entry>
+    cmd: set
+
+-   name: monitor-policy-tuning
+    xpath: /config/shared/reports
+    element: |-
+        <entry name="Best Practice Policy Tuning">
+          <type>
+            <trsum>
+              <sortby>bytes</sortby>
+              <group-by>subcategory-of-app</group-by>
+              <aggregate-by>
+                <member>app</member>
+                <member>rule</member>
+              </aggregate-by>
+              <values>
+                <member>bytes</member>
+                <member>sessions</member>
+              </values>
+            </trsum>
+          </type>
+          <period>last-calendar-day</period>
+          <topn>25</topn>
+          <topm>50</topm>
+          <caption>Best Practice Policy Tuning</caption>
+          <frequency>daily</frequency>
+          <query>(rule eq 'Unexpected Port SSL and Web') or (rule eq 'Unknown User SSL and Web') or (rule eq 'Unexpected Traffic') or (rule eq 'Unexpected Port Usage')</query>
+        </entry>
+    cmd: set
+
+-   name: service-quic-udp
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/service
+    element: |-
+        <entry name="quic_udp_ports">
+          <protocol>
+            <udp>
+              <port>80, 443</port>
+              <override>
+                <no/>
+              </override>
+            </udp>
+          </protocol>
+        </entry>
+    cmd: set
+
+-   name: bp-av-profile
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/profiles/virus
+    element: |-
+        <entry name="Strict-AV">
+          <decoder>
+            <entry name="ftp">
+              <action>default</action>
+              <wildfire-action>default</wildfire-action>
+              <mlav-action>default</mlav-action>
+            </entry>
+            <entry name="http">
+              <action>default</action>
+              <wildfire-action>default</wildfire-action>
+              <mlav-action>default</mlav-action>
+            </entry>
+            <entry name="http2">
+              <action>default</action>
+              <wildfire-action>default</wildfire-action>
+              <mlav-action>default</mlav-action>
+            </entry>
+            <entry name="imap">
+              <action>reset-both</action>
+              <wildfire-action>reset-both</wildfire-action>
+              <mlav-action>reset-both</mlav-action>
+            </entry>
+            <entry name="pop3">
+              <action>reset-both</action>
+              <wildfire-action>reset-both</wildfire-action>
+              <mlav-action>reset-both</mlav-action>
+            </entry>
+            <entry name="smb">
+              <action>default</action>
+              <wildfire-action>default</wildfire-action>
+              <mlav-action>default</mlav-action>
+            </entry>
+            <entry name="smtp">
+              <action>reset-both</action>
+              <wildfire-action>reset-both</wildfire-action>
+              <mlav-action>reset-both</mlav-action>
+            </entry>
+          </decoder>
+          <mlav-engine-filebased-enabled>
+            <entry name="Windows Executables">
+              <mlav-policy-action>enable</mlav-policy-action>
+            </entry>
+            <entry name="PowerShell Script 1">
+              <mlav-policy-action>enable</mlav-policy-action>
+            </entry>
+            <entry name="PowerShell Script 2">
+              <mlav-policy-action>enable</mlav-policy-action>
+            </entry>
+            <entry name="Executable Linked Format">
+              <mlav-policy-action>enable</mlav-policy-action>
+            </entry>
+          </mlav-engine-filebased-enabled>
+        </entry>
+    cmd: set
+
+-   name: bp-vuln-profile
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/profiles/vulnerability
+    element: |-
+        <entry name="best-practice-vulnerability">
+          <rules>
+            <entry name="simple-client-critical">
+              <action>
+                <reset-both/>
+              </action>
+              <vendor-id>
+                <member>any</member>
+              </vendor-id>
+              <severity>
+                <member>critical</member>
+              </severity>
+              <cve>
+                <member>any</member>
+              </cve>
+              <threat-name>any</threat-name>
+              <host>client</host>
+              <category>any</category>
+              <packet-capture>single-packet</packet-capture>
+            </entry>
+            <entry name="simple-client-high">
+              <action>
+                <reset-both/>
+              </action>
+              <vendor-id>
+                <member>any</member>
+              </vendor-id>
+              <severity>
+                <member>high</member>
+              </severity>
+              <cve>
+                <member>any</member>
+              </cve>
+              <threat-name>any</threat-name>
+              <host>client</host>
+              <category>any</category>
+              <packet-capture>single-packet</packet-capture>
+            </entry>
+            <entry name="simple-client-medium">
+              <action>
+                <reset-both/>
+              </action>
+              <vendor-id>
+                <member>any</member>
+              </vendor-id>
+              <severity>
+                <member>medium</member>
+              </severity>
+              <cve>
+                <member>any</member>
+              </cve>
+              <threat-name>any</threat-name>
+              <host>client</host>
+              <category>any</category>
+              <packet-capture>single-packet</packet-capture>
+            </entry>
+            <entry name="simple-client-informational">
+              <action>
+                <default/>
+              </action>
+              <vendor-id>
+                <member>any</member>
+              </vendor-id>
+              <severity>
+                <member>informational</member>
+              </severity>
+              <cve>
+                <member>any</member>
+              </cve>
+              <threat-name>any</threat-name>
+              <host>client</host>
+              <category>any</category>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="simple-client-low">
+              <action>
+                <default/>
+              </action>
+              <vendor-id>
+                <member>any</member>
+              </vendor-id>
+              <severity>
+                <member>low</member>
+              </severity>
+              <cve>
+                <member>any</member>
+              </cve>
+              <threat-name>any</threat-name>
+              <host>client</host>
+              <category>any</category>
+              <packet-capture>single-packet</packet-capture>
+            </entry>
+            <entry name="simple-server-critical">
+              <action>
+                <reset-both/>
+              </action>
+              <vendor-id>
+                <member>any</member>
+              </vendor-id>
+              <severity>
+                <member>critical</member>
+              </severity>
+              <cve>
+                <member>any</member>
+              </cve>
+              <threat-name>any</threat-name>
+              <host>server</host>
+              <category>any</category>
+              <packet-capture>single-packet</packet-capture>
+            </entry>
+            <entry name="simple-server-high">
+              <action>
+                <reset-both/>
+              </action>
+              <vendor-id>
+                <member>any</member>
+              </vendor-id>
+              <severity>
+                <member>high</member>
+              </severity>
+              <cve>
+                <member>any</member>
+              </cve>
+              <threat-name>any</threat-name>
+              <host>server</host>
+              <category>any</category>
+              <packet-capture>single-packet</packet-capture>
+            </entry>
+            <entry name="simple-server-medium">
+              <action>
+                <reset-both/>
+              </action>
+              <vendor-id>
+                <member>any</member>
+              </vendor-id>
+              <severity>
+                <member>medium</member>
+              </severity>
+              <cve>
+                <member>any</member>
+              </cve>
+              <threat-name>any</threat-name>
+              <host>server</host>
+              <category>any</category>
+              <packet-capture>single-packet</packet-capture>
+            </entry>
+            <entry name="simple-server-informational">
+              <action>
+                <default/>
+              </action>
+              <vendor-id>
+                <member>any</member>
+              </vendor-id>
+              <severity>
+                <member>informational</member>
+              </severity>
+              <cve>
+                <member>any</member>
+              </cve>
+              <threat-name>any</threat-name>
+              <host>server</host>
+              <category>any</category>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="simple-server-low">
+              <action>
+                <default/>
+              </action>
+              <vendor-id>
+                <member>any</member>
+              </vendor-id>
+              <severity>
+                <member>low</member>
+              </severity>
+              <cve>
+                <member>any</member>
+              </cve>
+              <threat-name>any</threat-name>
+              <host>server</host>
+              <category>any</category>
+              <packet-capture>single-packet</packet-capture>
+            </entry>
+          </rules>
+        </entry>
+    cmd: set
+
+-   name: bp-spyware-profile
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/profiles/spyware
+    element: |-
+        <entry name="best-practice">
+          <rules>
+            <entry name="simple-critical">
+              <action>
+                <reset-both/>
+              </action>
+              <severity>
+                <member>critical</member>
+              </severity>
+              <threat-name>any</threat-name>
+              <category>any</category>
+              <packet-capture>single-packet</packet-capture>
+            </entry>
+            <entry name="simple-high">
+              <action>
+                <reset-both/>
+              </action>
+              <severity>
+                <member>high</member>
+              </severity>
+              <threat-name>any</threat-name>
+              <category>any</category>
+              <packet-capture>single-packet</packet-capture>
+            </entry>
+            <entry name="simple-medium">
+              <action>
+                <reset-both/>
+              </action>
+              <severity>
+                <member>medium</member>
+              </severity>
+              <threat-name>any</threat-name>
+              <category>any</category>
+              <packet-capture>single-packet</packet-capture>
+            </entry>
+            <entry name="simple-informational">
+              <action>
+                <default/>
+              </action>
+              <severity>
+                <member>informational</member>
+              </severity>
+              <threat-name>any</threat-name>
+              <category>any</category>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="simple-low">
+              <action>
+                <default/>
+              </action>
+              <severity>
+                <member>low</member>
+              </severity>
+              <threat-name>any</threat-name>
+              <category>any</category>
+              <packet-capture>disable</packet-capture>
+            </entry>
+          </rules>
+          <botnet-domains>
+            <lists>
+              <entry name="default-paloalto-dns">
+                <action>
+                  <sinkhole/>
+                </action>
+                <packet-capture>disable</packet-capture>
+              </entry>
+            </lists>
+            <dns-security-categories>
+              <entry name="pan-dns-sec-cc">
+                <log-level>critical</log-level>
+                <action>sinkhole</action>
+                <packet-capture>extended-capture</packet-capture>
+              </entry>
+              <entry name="pan-dns-sec-ddns">
+                <log-level>medium</log-level>
+                <action>sinkhole</action>
+                <packet-capture>disable</packet-capture>
+              </entry>
+              <entry name="pan-dns-sec-grayware">
+                <log-level>high</log-level>
+                <action>sinkhole</action>
+                <packet-capture>disable</packet-capture>
+              </entry>
+              <entry name="pan-dns-sec-malware">
+                <log-level>high</log-level>
+                <action>sinkhole</action>
+                <packet-capture>disable</packet-capture>
+              </entry>
+              <entry name="pan-dns-sec-parked">
+                <log-level>medium</log-level>
+                <action>sinkhole</action>
+                <packet-capture>disable</packet-capture>
+              </entry>
+              <entry name="pan-dns-sec-phishing">
+                <log-level>high</log-level>
+                <action>sinkhole</action>
+                <packet-capture>disable</packet-capture>
+              </entry>
+              <entry name="pan-dns-sec-proxy">
+                <log-level>default</log-level>
+                <action>default</action>
+                <packet-capture>disable</packet-capture>
+              </entry>
+              <entry name="pan-dns-sec-recent">
+                <log-level>medium</log-level>
+                <action>sinkhole</action>
+                <packet-capture>disable</packet-capture>
+              </entry>
+            </dns-security-categories>
+            <sinkhole>
+              <ipv4-address>pan-sinkhole-default-ip</ipv4-address>
+              <ipv6-address>::1</ipv6-address>
+            </sinkhole>
+          </botnet-domains>
+        </entry>
+    cmd: set
+
+-   name: bp-url-profile
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/profiles/url-filtering
+    element: |-
+        <entry name="best-practice">
+          <credential-enforcement>
+            <mode>
+              <disabled/>
+            </mode>
+            <log-severity>medium</log-severity>
+            <block>
+              <member>command-and-control</member>
+              <member>copyright-infringement</member>
+              <member>dynamic-dns</member>
+              <member>extremism</member>
+              <member>grayware</member>
+              <member>malware</member>
+              <member>newly-registered-domain</member>
+              <member>parked</member>
+              <member>phishing</member>
+              <member>proxy-avoidance-and-anonymizers</member>
+              <member>unknown</member>
+            </block>
+          </credential-enforcement>
+          <alert>
+            <member>abortion</member>
+            <member>abused-drugs</member>
+            <member>adult</member>
+            <member>alcohol-and-tobacco</member>
+            <member>auctions</member>
+            <member>business-and-economy</member>
+            <member>computer-and-internet-info</member>
+            <member>content-delivery-networks</member>
+            <member>cryptocurrency</member>
+            <member>dating</member>
+            <member>educational-institutions</member>
+            <member>entertainment-and-arts</member>
+            <member>financial-services</member>
+            <member>gambling</member>
+            <member>games</member>
+            <member>government</member>
+            <member>hacking</member>
+            <member>health-and-medicine</member>
+            <member>high-risk</member>
+            <member>home-and-garden</member>
+            <member>hunting-and-fishing</member>
+            <member>insufficient-content</member>
+            <member>internet-communications-and-telephony</member>
+            <member>internet-portals</member>
+            <member>job-search</member>
+            <member>legal</member>
+            <member>low-risk</member>
+            <member>medium-risk</member>
+            <member>military</member>
+            <member>motor-vehicles</member>
+            <member>music</member>
+            <member>news</member>
+            <member>not-resolved</member>
+            <member>nudity</member>
+            <member>online-storage-and-backup</member>
+            <member>peer-to-peer</member>
+            <member>personal-sites-and-blogs</member>
+            <member>philosophy-and-political-advocacy</member>
+            <member>private-ip-addresses</member>
+            <member>questionable</member>
+            <member>real-estate</member>
+            <member>real-time-detection</member>
+            <member>recreation-and-hobbies</member>
+            <member>reference-and-research</member>
+            <member>religion</member>
+            <member>search-engines</member>
+            <member>sex-education</member>
+            <member>shareware-and-freeware</member>
+            <member>shopping</member>
+            <member>social-networking</member>
+            <member>society</member>
+            <member>sports</member>
+            <member>stock-advice-and-tools</member>
+            <member>streaming-media</member>
+            <member>swimsuits-and-intimate-apparel</member>
+            <member>training-and-tools</member>
+            <member>translation</member>
+            <member>travel</member>
+            <member>weapons</member>
+            <member>web-advertisements</member>
+            <member>web-based-email</member>
+            <member>web-hosting</member>
+          </alert>
+          <block>
+            <member>command-and-control</member>
+            <member>copyright-infringement</member>
+            <member>dynamic-dns</member>
+            <member>extremism</member>
+            <member>grayware</member>
+            <member>malware</member>
+            <member>newly-registered-domain</member>
+            <member>parked</member>
+            <member>phishing</member>
+            <member>proxy-avoidance-and-anonymizers</member>
+            <member>unknown</member>
+          </block>
+          <mlav-engine-urlbased-enabled>
+            <entry name="Phishing Detection">
+              <mlav-policy-action>allow</mlav-policy-action>
+            </entry>
+            <entry name="Javascript Exploit Detection">
+              <mlav-policy-action>allow</mlav-policy-action>
+            </entry>
+          </mlav-engine-urlbased-enabled>
+        </entry>
+    cmd: set
+
+-   name: bp-wildfire
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/profiles/wildfire-analysis
+    element: |-
+        <entry name="best-practice-wildfire">
+          <rules>
+            <entry name="Send-all">
+              <application>
+                <member>any</member>
+              </application>
+              <file-type>
+                <member>any</member>
+              </file-type>
+              <direction>both</direction>
+              <analysis>public-cloud</analysis>
+            </entry>
+          </rules>
+        </entry>
+    cmd: set
+
+-   name: bp-decryption-profile
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/profiles/decryption
+    element: |-
+        <entry name="Tight TLS Control">
+          <ssl-forward-proxy>
+            <block-expired-certificate>yes</block-expired-certificate>
+            <block-untrusted-issuer>yes</block-untrusted-issuer>
+            <block-unknown-cert>yes</block-unknown-cert>
+            <restrict-cert-exts>yes</restrict-cert-exts>
+            <auto-include-altname>yes</auto-include-altname>
+            <block-unsupported-version>yes</block-unsupported-version>
+            <block-unsupported-cipher>yes</block-unsupported-cipher>
+            <block-if-no-resource>yes</block-if-no-resource>
+          </ssl-forward-proxy>
+          <ssl-protocol-settings>
+            <min-version>tls1-2</min-version>
+            <max-version>max</max-version>
+            <enc-algo-3des>no</enc-algo-3des>
+            <enc-algo-rc4>no</enc-algo-rc4>
+            <enc-algo-chacha20-poly1305>yes</enc-algo-chacha20-poly1305>
+          </ssl-protocol-settings>
+          <ssl-no-proxy>
+            <block-expired-certificate>yes</block-expired-certificate>
+            <block-untrusted-issuer>yes</block-untrusted-issuer>
+          </ssl-no-proxy>
+        </entry>
+    cmd: set
+
+-   name: drop-outbound-malicious-ip
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/rulebase/security/rules
+    element: |-
+        <entry name="Drop Outbound Malicious IP">
+          <to>
+            <member>any</member>
+          </to>
+          <from>
+            <member>any</member>
+          </from>
+          <source>
+            <member>any</member>
+          </source>
+          <destination>
+            <member>panw-known-ip-list</member>
+          </destination>
+          <source-user>
+            <member>any</member>
+          </source-user>
+          <category>
+            <member>any</member>
+          </category>
+          <application>
+            <member>any</member>
+          </application>
+          <service>
+            <member>application-default</member>
+          </service>
+          <source-hip>
+            <member>any</member>
+          </source-hip>
+          <destination-hip>
+            <member>any</member>
+          </destination-hip>
+          <action>deny</action>
+        </entry>
+    cmd: set
+
+-   name: drop-inbound-malicious-ip
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/rulebase/security/rules
+    element: |-
+        <entry name="Drop Inbound Malicious IP">
+          <to>
+            <member>any</member>
+          </to>
+          <from>
+            <member>any</member>
+          </from>
+          <source>
+            <member>panw-known-ip-list</member>
+          </source>
+          <destination>
+            <member>any</member>
+          </destination>
+          <source-user>
+            <member>any</member>
+          </source-user>
+          <category>
+            <member>any</member>
+          </category>
+          <application>
+            <member>any</member>
+          </application>
+          <service>
+            <member>application-default</member>
+          </service>
+          <source-hip>
+            <member>any</member>
+          </source-hip>
+          <destination-hip>
+            <member>any</member>
+          </destination-hip>
+          <action>deny</action>
+        </entry>
+    cmd: set
+
+-   name: drop-outbound-bulletproof-ip
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/rulebase/security/rules
+    element: |-
+        <entry name="Drop Outbound Bulletproof IP">
+          <to>
+            <member>any</member>
+          </to>
+          <from>
+            <member>any</member>
+          </from>
+          <source>
+            <member>any</member>
+          </source>
+          <destination>
+            <member>panw-bulletproof-ip-list</member>
+          </destination>
+          <source-user>
+            <member>any</member>
+          </source-user>
+          <category>
+            <member>any</member>
+          </category>
+          <application>
+            <member>any</member>
+          </application>
+          <service>
+            <member>application-default</member>
+          </service>
+          <source-hip>
+            <member>any</member>
+          </source-hip>
+          <destination-hip>
+            <member>any</member>
+          </destination-hip>
+          <action>deny</action>
+        </entry>
+    cmd: set
+
+-   name: drop-inbound-bulletproof-ip
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/rulebase/security/rules
+    element: |-
+        <entry name="Drop Inbound Bulletproof IP">
+          <to>
+            <member>any</member>
+          </to>
+          <from>
+            <member>any</member>
+          </from>
+          <source>
+            <member>panw-bulletproof-ip-list</member>
+          </source>
+          <destination>
+            <member>any</member>
+          </destination>
+          <source-user>
+            <member>any</member>
+          </source-user>
+          <category>
+            <member>any</member>
+          </category>
+          <application>
+            <member>any</member>
+          </application>
+          <service>
+            <member>application-default</member>
+          </service>
+          <source-hip>
+            <member>any</member>
+          </source-hip>
+          <destination-hip>
+            <member>any</member>
+          </destination-hip>
+          <action>deny</action>
+        </entry>
+    cmd: set
+
+-   name: drop-outbound-highrisk-ip
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/rulebase/security/rules
+    element: |-
+        <entry name="Drop Outbound High Risk IP">
+          <to>
+            <member>any</member>
+          </to>
+          <from>
+            <member>any</member>
+          </from>
+          <source>
+            <member>any</member>
+          </source>
+          <destination>
+            <member>panw-highrisk-ip-list</member>
+          </destination>
+          <source-user>
+            <member>any</member>
+          </source-user>
+          <category>
+            <member>any</member>
+          </category>
+          <application>
+            <member>any</member>
+          </application>
+          <service>
+            <member>application-default</member>
+          </service>
+          <source-hip>
+            <member>any</member>
+          </source-hip>
+          <destination-hip>
+            <member>any</member>
+          </destination-hip>
+          <action>deny</action>
+        </entry>
+    cmd: set
+
+-   name: drop-inbound-highrisk-ip
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/rulebase/security/rules
+    element: |-
+        <entry name="Drop Inbound High Risk IP">
+          <to>
+            <member>any</member>
+          </to>
+          <from>
+            <member>any</member>
+          </from>
+          <source>
+            <member>panw-highrisk-ip-list</member>
+          </source>
+          <destination>
+            <member>any</member>
+          </destination>
+          <source-user>
+            <member>any</member>
+          </source-user>
+          <category>
+            <member>any</member>
+          </category>
+          <application>
+            <member>any</member>
+          </application>
+          <service>
+            <member>application-default</member>
+          </service>
+          <source-hip>
+            <member>any</member>
+          </source-hip>
+          <destination-hip>
+            <member>any</member>
+          </destination-hip>
+          <action>deny</action>
+        </entry>
+    cmd: set
+
