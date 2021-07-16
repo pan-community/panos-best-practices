@@ -21,6 +21,6 @@ snippets:
       </multicast>
 
   - name: allow_http_range
-    xpath: /config/devices/entry[@name="localhost.localdomain"]/network/virtual-router/entry[@name="default"]
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/deviceconfig/setting/ctd
     element: |-
       <allow-http-range>no</allow-http-range>
