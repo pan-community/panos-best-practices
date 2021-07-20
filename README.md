@@ -1,18 +1,42 @@
-# PAN-OS Best Practices
-
-Best Practice configs that add on to HomeSkillet/IronSkillet
+# Best Practices Quickplay Solution
 
 
-# Internet Gateway Add-On Skillet
-content coming soon.
+## Prerequisites 
+The following should be completed before running the Best Practices Quickplay Solution:
 
-# Layer 4 to 7 Networking Security Add-On Skillet
+    1. Deploy a PAN-OS 10.X NGFW
+    2. License NGFW with the Threat, URL, and WildFire subscriptions
+    3. Install PanHandler (Version 4.5+) or other skillet-supported applications, such as SLI
+    4. Configure the NGFW for IronSkillet
 
-This skillet is meant as an add-on to the base HomeSkillet/IronSkillet configurations.
-Please load in HomeSkillet with IronSkillet as a baseline prior to loading this 
-configuration skillet to your NGFW.
+> **NOTE**: You must have IronSkillet configured on your NGFW before loading the Best Practices solution 
+> since many Best Practices configuration elements depend on IronSkillet elements.
 
-## What this Skillet does
+## Submodules Utilized
+
+This quickplay solution uses the [panos-best-practices](https://gitlab.com/panw-gse/as/panos-best-practices) 
+repository as a submodule.
+
+## Internet Gateway Skillet Details
+
+### Add monitoring reports
+
+Assists with monitoring logs to find policy gaps and abnormal behavior.
+
+### Best Practice Security Profiles 
+
+Adds best practice Antivirus, Anti-Spyware, Vulnerability, Wildfire, URL Filtering, File Blocking
+security profiles. 
+
+> **NOTE**: These profiles will need to be added manually to security policies during policy tuning.
+
+### Best Practice Security Policies based on Trusted Threat Intelligence Sources
+
+ - Block Inbound/Outbound known malicious IP addresses
+ - Block Inbound/Outbound bulletproof IP addresses
+ - Block Inbound/Outbound high-risk IP addresses
+
+## Layer 4 - Layer 7 Skillet Details
 
 
 ### Enable drop Mismatched Overlapping TCP Segment
