@@ -24,3 +24,433 @@ snippets:
     xpath: /config/devices/entry[@name="localhost.localdomain"]/deviceconfig/setting/ctd
     element: |-
       <allow-http-range>no</allow-http-range>
+
+  - name: layer_4_to_7_zone_protection
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/network/profiles/zone-protection-profile
+    element: |-
+      <entry name="Layer 4 to 7 zone protection">
+        <flood>
+          <tcp-syn>
+            <red>
+              <alarm-rate>10000</alarm-rate>
+              <activate-rate>10000</activate-rate>
+              <maximal-rate>40000</maximal-rate>
+            </red>
+            <enable>no</enable>
+          </tcp-syn>
+          <udp>
+            <red>
+              <alarm-rate>10000</alarm-rate>
+              <activate-rate>10000</activate-rate>
+              <maximal-rate>40000</maximal-rate>
+            </red>
+            <enable>no</enable>
+          </udp>
+          <icmp>
+            <red>
+              <alarm-rate>10000</alarm-rate>
+              <activate-rate>10000</activate-rate>
+              <maximal-rate>40000</maximal-rate>
+            </red>
+            <enable>no</enable>
+          </icmp>
+          <icmpv6>
+            <red>
+              <alarm-rate>10000</alarm-rate>
+              <activate-rate>10000</activate-rate>
+              <maximal-rate>40000</maximal-rate>
+            </red>
+            <enable>no</enable>
+          </icmpv6>
+          <other-ip>
+            <red>
+              <alarm-rate>10000</alarm-rate>
+              <activate-rate>10000</activate-rate>
+              <maximal-rate>40000</maximal-rate>
+            </red>
+            <enable>no</enable>
+          </other-ip>
+        </flood>
+        <discard-malformed-option>yes</discard-malformed-option>
+        <discard-overlapping-tcp-segment-mismatch>yes</discard-overlapping-tcp-segment-mismatch>
+        <discard-tcp-syn-with-data>yes</discard-tcp-syn-with-data>
+        <discard-tcp-synack-with-data>yes</discard-tcp-synack-with-data>
+        <remove-tcp-timestamp>yes</remove-tcp-timestamp>
+        <description>A zone protection profile created from the Layer 4 to 7 guide</description>
+      </entry>
+
+  - name: layer_4_to_7_wildfire_AV
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/profiles/virus
+    element: |-
+      <entry name="WildFire Inline ML">
+        <decoder>
+          <entry name="ftp">
+            <action>default</action>
+            <wildfire-action>default</wildfire-action>
+            <mlav-action>default</mlav-action>
+          </entry>
+          <entry name="http">
+            <action>default</action>
+            <wildfire-action>default</wildfire-action>
+            <mlav-action>default</mlav-action>
+          </entry>
+          <entry name="http2">
+            <action>default</action>
+            <wildfire-action>default</wildfire-action>
+            <mlav-action>default</mlav-action>
+          </entry>
+          <entry name="imap">
+            <action>default</action>
+            <wildfire-action>default</wildfire-action>
+            <mlav-action>default</mlav-action>
+          </entry>
+          <entry name="pop3">
+            <action>default</action>
+            <wildfire-action>default</wildfire-action>
+            <mlav-action>default</mlav-action>
+          </entry>
+          <entry name="smb">
+            <action>default</action>
+            <wildfire-action>default</wildfire-action>
+            <mlav-action>default</mlav-action>
+          </entry>
+          <entry name="smtp">
+            <action>default</action>
+            <wildfire-action>default</wildfire-action>
+            <mlav-action>default</mlav-action>
+          </entry>
+        </decoder>
+        <description>WildFire profile from Layer 4 to 7 guide</description>
+        <mlav-engine-filebased-enabled>
+          <entry name="Windows Executables">
+            <mlav-policy-action>enable</mlav-policy-action>
+          </entry>
+          <entry name="PowerShell Script 1">
+            <mlav-policy-action>enable</mlav-policy-action>
+          </entry>
+          <entry name="PowerShell Script 2">
+            <mlav-policy-action>enable</mlav-policy-action>
+          </entry>
+          <entry name="Executable Linked Format">
+            <mlav-policy-action>enable</mlav-policy-action>
+          </entry>
+          <entry name="MSOffice">
+            <mlav-policy-action>disable</mlav-policy-action>
+          </entry>
+        </mlav-engine-filebased-enabled>
+      </entry>
+
+  - name: layer_4_to_7_block_all_AV
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/profiles/virus
+    element: |-
+      <entry name="block all content">
+        <decoder>
+          <entry name="smtp">
+            <action>reset-both</action>
+            <wildfire-action>reset-both</wildfire-action>
+            <mlav-action>reset-both</mlav-action>
+          </entry>
+          <entry name="smb">
+            <action>default</action>
+            <wildfire-action>default</wildfire-action>
+            <mlav-action>default</mlav-action>
+          </entry>
+          <entry name="pop3">
+            <action>reset-both</action>
+            <wildfire-action>reset-both</wildfire-action>
+            <mlav-action>reset-both</mlav-action>
+          </entry>
+          <entry name="imap">
+            <action>reset-both</action>
+            <wildfire-action>reset-both</wildfire-action>
+            <mlav-action>reset-both</mlav-action>
+          </entry>
+          <entry name="http2">
+            <action>default</action>
+            <wildfire-action>default</wildfire-action>
+            <mlav-action>default</mlav-action>
+          </entry>
+          <entry name="http">
+            <action>default</action>
+            <wildfire-action>default</wildfire-action>
+            <mlav-action>default</mlav-action>
+          </entry>
+          <entry name="ftp">
+            <action>default</action>
+            <wildfire-action>default</wildfire-action>
+            <mlav-action>default</mlav-action>
+          </entry>
+        </decoder>
+        <description>Layer 4 to 7 recommended antivirus profile to block all content that matches an antivirus signature</description>
+        <mlav-engine-filebased-enabled>
+          <entry name="Windows Executables">
+            <mlav-policy-action>disable</mlav-policy-action>
+          </entry>
+          <entry name="PowerShell Script 1">
+            <mlav-policy-action>disable</mlav-policy-action>
+          </entry>
+          <entry name="PowerShell Script 2">
+            <mlav-policy-action>disable</mlav-policy-action>
+          </entry>
+          <entry name="Executable Linked Format">
+            <mlav-policy-action>disable</mlav-policy-action>
+          </entry>
+          <entry name="MSOffice">
+            <mlav-policy-action>disable</mlav-policy-action>
+          </entry>
+        </mlav-engine-filebased-enabled>
+      </entry>
+
+  - name: layer_4_to_7_BP_spyware
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/profiles/spyware
+    element: |-
+      <entry name="Layer 4 to 7">
+        <botnet-domains>
+          <lists>
+            <entry name="default-paloalto-dns">
+              <action>
+                <sinkhole/>
+              </action>
+              <packet-capture>extended-capture</packet-capture>
+            </entry>
+          </lists>
+          <dns-security-categories>
+            <entry name="pan-dns-sec-cc">
+              <log-level>default</log-level>
+              <action>sinkhole</action>
+              <packet-capture>extended-capture</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-ddns">
+              <log-level>default</log-level>
+              <action>sinkhole</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-grayware">
+              <log-level>default</log-level>
+              <action>sinkhole</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-malware">
+              <log-level>default</log-level>
+              <action>sinkhole</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-parked">
+              <log-level>default</log-level>
+              <action>sinkhole</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-phishing">
+              <log-level>default</log-level>
+              <action>sinkhole</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-proxy">
+              <log-level>default</log-level>
+              <action>sinkhole</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-recent">
+              <log-level>default</log-level>
+              <action>sinkhole</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+          </dns-security-categories>
+          <sinkhole>
+            <ipv4-address>pan-sinkhole-default-ip</ipv4-address>
+            <ipv6-address>::1</ipv6-address>
+          </sinkhole>
+        </botnet-domains>
+        <description>Layer 4 to 7 anti spyware profile with sinkhole as DNS policy action</description>
+      </entry>
+
+  - name: layer_4_to_7_block_all_low_up_spyware
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/profiles/spyware
+    element: |-
+      <entry name="block all low and up">
+        <botnet-domains>
+          <lists>
+            <entry name="default-paloalto-dns">
+              <action>
+                <sinkhole/>
+              </action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+          </lists>
+          <dns-security-categories>
+            <entry name="pan-dns-sec-cc">
+              <log-level>default</log-level>
+              <action>default</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-ddns">
+              <log-level>default</log-level>
+              <action>default</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-grayware">
+              <log-level>default</log-level>
+              <action>default</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-malware">
+              <log-level>default</log-level>
+              <action>default</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-parked">
+              <log-level>default</log-level>
+              <action>default</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-phishing">
+              <log-level>default</log-level>
+              <action>default</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-proxy">
+              <log-level>default</log-level>
+              <action>default</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+            <entry name="pan-dns-sec-recent">
+              <log-level>default</log-level>
+              <action>default</action>
+              <packet-capture>disable</packet-capture>
+            </entry>
+          </dns-security-categories>
+          <sinkhole>
+            <ipv4-address>pan-sinkhole-default-ip</ipv4-address>
+            <ipv6-address>::1</ipv6-address>
+          </sinkhole>
+        </botnet-domains>
+        <rules>
+          <entry name="block-all-low-higher">
+            <action>
+              <reset-both/>
+            </action>
+            <severity>
+              <member>low</member>
+              <member>medium</member>
+              <member>high</member>
+              <member>critical</member>
+            </severity>
+            <threat-name>any</threat-name>
+            <category>spyware</category>
+            <packet-capture>disable</packet-capture>
+          </entry>
+        </rules>
+        <description>Layer 4 to 7 recommended policy to block all spyware with low severity and higher</description>
+      </entry>
+
+  - name: layer_4_to_7_BP_vulnerability
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/profiles/vulnerability
+    element: |-
+      <entry name="best practice vulnerability">
+        <rules>
+          <entry name="Block protocol anomalies">
+            <action>
+              <reset-both/>
+            </action>
+            <vendor-id>
+              <member>any</member>
+            </vendor-id>
+            <severity>
+              <member>any</member>
+            </severity>
+            <cve>
+              <member>any</member>
+            </cve>
+            <threat-name>any</threat-name>
+            <host>any</host>
+            <category>protocol-anomaly</category>
+            <packet-capture>extended-capture</packet-capture>
+          </entry>
+          <entry name="Block all vulnerabilities">
+            <action>
+              <reset-both/>
+            </action>
+            <vendor-id>
+              <member>any</member>
+            </vendor-id>
+            <severity>
+              <member>low</member>
+              <member>medium</member>
+              <member>high</member>
+              <member>critical</member>
+            </severity>
+            <cve>
+              <member>any</member>
+            </cve>
+            <threat-name>any</threat-name>
+            <host>any</host>
+            <category>protocol-anomaly</category>
+            <packet-capture>extended-capture</packet-capture>
+          </entry>
+        </rules>
+        <description>a best practice vulnerability profile from the layer 4 to 7 guide</description>
+      </entry>
+
+  - name: layer_4_to_7_block_pe_SMB
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/profiles/file-blocking
+    element: |-
+      <entry name="Block PE for SMB">
+        <rules>
+          <entry name="Block PE for SMB">
+            <application>
+              <member>ms-ds-smb-base</member>
+            </application>
+            <file-type>
+              <member>any</member>
+            </file-type>
+            <direction>both</direction>
+            <action>alert</action>
+          </entry>
+        </rules>
+        <description>From Layer 4 to 7 skillet</description>
+      </entry>
+
+  - name: layer_4_to_7_spyware_policy
+    xpath: /config/devices/entry[@name="localhost.localdomain"]/vsys/entry[@name="vsys1"]/rulebase/security/rules
+    element: |-
+      <entry name="Layer 4 to 7 Anti-Spyware">
+        <profile-setting>
+          <profiles>
+            <spyware>
+              <member>Layer 4 to 7</member>
+            </spyware>
+          </profiles>
+        </profile-setting>
+        <to>
+          <member>internet</member>
+        </to>
+        <from>
+          <member>internal</member>
+        </from>
+        <source>
+          <member>any</member>
+        </source>
+        <destination>
+          <member>any</member>
+        </destination>
+        <source-user>
+          <member>any</member>
+        </source-user>
+        <category>
+          <member>any</member>
+        </category>
+        <application>
+          <member>any</member>
+        </application>
+        <service>
+          <member>application-default</member>
+        </service>
+        <source-hip>
+          <member>any</member>
+        </source-hip>
+        <destination-hip>
+          <member>any</member>
+        </destination-hip>
+        <action>allow</action>
+        <log-setting>default</log-setting>
+      </entry>
